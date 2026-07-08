@@ -1,5 +1,10 @@
-BMC
-===
+# BMC Fork and Modification Note
+
+This directory contains a fork of the official repository for the NSDI '21 paper "BMC: Accelerating Memcached using Safe In-Kernel Caching". Please note that this codebase is a third-party framework; it was not designed by us, and we are not responsible for its original implementation or dependency constraints.
+
+To adapt the legacy codebase for modern compilers (specifically LLVM/Clang version 14 or higher), we applied a key compatibility patch inside [bmc/bmc_kern.c](file:///home/olly/UNI/NetCmp/BMC_Check/bmc-cache_NC/bmc/bmc_kern.c). The original whitespace-skipping loop triggered aggressive loop unrolling in modern compiler versions, which invalidated packet bounds checks and caused the Linux kernel verifier to reject the eBPF bytecode. We replaced that loop with a compiler-friendly bounded iteration matching the data bounds of the network descriptor, which resolves the verifier's safety checks and allows successful compilation and deployment.
+
+***
 
 ### __Code for the [NSDI'21 paper](https://www.usenix.org/system/files/nsdi21-ghigoff.pdf) *"BMC: Accelerating Memcached using Safe In-kernel Caching and Pre-stack Processing"*.__
 
