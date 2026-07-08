@@ -1,0 +1,17 @@
+# Auto-generated benchmark outputs
+plots/
+results/
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
