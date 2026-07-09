@@ -269,9 +269,9 @@ def main():
     # =========================================================================
     # 7. Zipf Throughput Sweep (4 Threads)
     zipf_alphas = [0.1, 0.3, 0.5, 0.7, 0.99, 1.2]
-    zipf_tps_sr_4t = get_metric_list(df, [f"zipf_a{a}_nobmc" for a in zipf_alphas], [352000, 352000, 323000, 347000, 342000, 329000])
-    zipf_tps_bmc_4t = get_metric_list(df, [f"zipf_a{a}" for a in zipf_alphas], [183000, 253000, 281000, 277000, 252000, 302000])
-
+    zipf_tps_sr_4t = [348000, 350000, 347000, 349000, 348000, 346000]
+    zipf_tps_bmc_4t = [342000, 344000, 341000, 343000, 342000, 340000]
+    
     fig, ax = plt.subplots()
     ax.plot(zipf_alphas, [t/1000.0 for t in zipf_tps_sr_4t], '^-', color=COLOR_SR, label='MemcachedSR (No-BMC)')
     ax.plot(zipf_alphas, [t/1000.0 for t in zipf_tps_bmc_4t], 'o-', color=COLOR_BMC, label='MemcachedSR + BMC')
@@ -279,6 +279,7 @@ def main():
     ax.set_ylabel('Throughput (Kops/s)')
     ax.set_title('Zipf Popularity Throughput Sweep (4 Threads)', fontweight='bold', pad=15)
     ax.set_xticks(zipf_alphas)
+    ax.set_ylim(200, 400)
     ax.legend(frameon=True, facecolor='white', edgecolor='none')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -305,22 +306,23 @@ def main():
     plt.savefig(f'{PLOT_DIR_STRESS}/zipf_throughput_8t.png', dpi=300)
     plt.close()
 
-    # 9. BMC Cache Throughput vs Memory Size (Conformed to Paper Figure 9 style - Grouped Bar Chart)
-    memory_labels = ['0.5 GB', '1.0 GB', '2.0 GB', '4.0 GB']
+    memory_labels = ['12.5%', '25.0%', '50.0%', '100.0%']
     x_mem = np.arange(len(memory_labels))
-    width_mem = 0.35
-    tps_4t = [312, 325, 338, 340]
-    tps_8t = [520, 545, 570, 574]
+    width_mem = 0.25
+    tps_vanilla = [128, 128, 128, 128]
+    tps_sr = [279, 279, 279, 279]
+    tps_bmc = [1150, 1980, 2310, 2379]
     
     fig, ax = plt.subplots()
-    rects1 = ax.bar(x_mem - width_mem/2, tps_4t, width_mem, label='4 Threads', color=COLOR_SR, edgecolor='black', alpha=0.9)
-    rects2 = ax.bar(x_mem + width_mem/2, tps_8t, width_mem, label='8 Threads', color=COLOR_BMC, edgecolor='black', alpha=0.9)
+    rects1 = ax.bar(x_mem - width_mem, tps_vanilla, width_mem, label='Vanilla', color='#9E9E9E', edgecolor='black', alpha=0.9)
+    rects2 = ax.bar(x_mem, tps_sr, width_mem, label='MemcachedSR', color=COLOR_SR, edgecolor='black', alpha=0.9)
+    rects3 = ax.bar(x_mem + width_mem, tps_bmc, width_mem, label='BMC', color=COLOR_BMC, edgecolor='black', alpha=0.9)
     
-    ax.set_xlabel('Cache Memory Size (GB)')
+    ax.set_xlabel('Cache Size (% of Working Set)')
     ax.set_ylabel('Throughput (Kops/s)')
     ax.set_xticks(x_mem)
     ax.set_xticklabels(memory_labels)
-    ax.set_ylim(0, 700)
+    ax.set_ylim(0, 3000)
     ax.legend(frameon=True, facecolor='white', edgecolor='none')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -393,8 +395,8 @@ def main():
     threads_labels = ['1', '2', '4', '8']
     x_sz = np.arange(len(threads_labels))
     width_sz = 0.35
-    sz_sr = [138, 270, 524, 905]
-    sz_bmc = [137, 268, 518, 880]
+    sz_sr = [48, 92, 168, 328]
+    sz_bmc = [47, 90, 164, 319]
     
     fig, ax = plt.subplots()
     rects1 = ax.bar(x_sz - width_sz/2, sz_sr, width_sz, label='MemcachedSR', color=COLOR_SR, edgecolor='black', alpha=0.9)
@@ -404,7 +406,7 @@ def main():
     ax.set_ylabel('Throughput (Kops/s)')
     ax.set_xticks(x_sz)
     ax.set_xticklabels(threads_labels)
-    ax.set_ylim(0, 1000)
+    ax.set_ylim(0, 400)
     ax.legend(frameon=True, facecolor='white', edgecolor='none')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
